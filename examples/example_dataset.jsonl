@@ -1,0 +1,10 @@
+{"prompt": "Explain the concept of machine learning in simple terms."}
+{"prompt": "What are the key differences between supervised and unsupervised learning?"}
+{"prompt": "How does a neural network learn from data?"}
+{"prompt": "What is the purpose of using LoRA adapters in large language models?"}
+{"prompt": "Describe the transformer architecture and its main components."}
+{"prompt": "What is attention mechanism and why is it important?"}
+{"prompt": "How can we prevent overfitting in machine learning models?"}
+{"prompt": "What are the advantages of fine-tuning versus training from scratch?"}
+{"prompt": "Explain gradient descent optimization algorithm."}
+{"prompt": "What is the difference between precision and recall in model evaluation?"}

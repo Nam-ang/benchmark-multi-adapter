@@ -1,0 +1,41 @@
+# vLLM Multi-LoRA Benchmark Configuration
+
+# Model settings
+model:
+  name: "meta-llama/Llama-2-7b-hf"  # 베이스 모델 경로
+  tensor_parallel_size: 1
+  gpu_memory_utilization: 0.9
+  max_model_len: 2048
+
+# Server settings
+server:
+  host: "localhost"
+  port: 8000
+
+# LoRA settings
+lora:
+  adapters_dir: "adapters"  # LoRA 어댑터 디렉토리
+  max_loras: 4  # 동시에 로드할 최대 LoRA 수
+  max_lora_rank: 64
+  max_cpu_loras: 8  # CPU에 캐시할 LoRA 수
+
+# Benchmark settings
+benchmark:
+  dataset_path: "data/benchmark_dataset.jsonl"
+  num_requests: 100  # 총 요청 수
+  concurrency: 1  # 동시 요청 수
+  shuffle_data: true  # 데이터 셔플링 여부
+  random_adapter_assignment: true  # 어댑터 무작위 할당
+
+# Generation settings
+generation:
+  max_tokens: 512
+  temperature: 0.7
+  top_p: 0.9
+  top_k: 50
+
+# Output settings
+output:
+  results_dir: "results"
+  save_detailed_logs: true
+  plot_results: true
