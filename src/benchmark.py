@@ -61,7 +61,7 @@ class MultiLoRABenchmark:
     ) -> Dict[str, Any]:
         """Send a single generation request."""
         gen_config = self.config['generation']
-        lora_config = self.config['lora']
+        # lora_config = self.config['lora']  <-- 경로 계산이 필요 없으므로 주석 처리 가능
 
         # Apply chat template to the prompt
         messages = [{"role": "user", "content": prompt}]
@@ -71,29 +71,28 @@ class MultiLoRABenchmark:
             add_generation_prompt=True
         )
 
+        # -------------------------------------------------------------------------
+        # [수정 핵심] 
+        # vLLM OpenAI 호환 API는 'model' 필드에 어댑터 이름을 넣어야 해당 어댑터를 로드합니다.
+        # adapter_name이 있으면 그것을 사용하고, 없으면 config의 기본 모델명을 사용합니다.
+        # -------------------------------------------------------------------------
+        target_model = adapter_name if adapter_name else self.config['model']['name']
+
         # Prepare request payload
         payload = {
-            "model": self.config['model']['name'],
+            "model": target_model,  # <-- 여기가 수정되었습니다 (기존: self.config['model']['name'])
             "prompt": formatted_prompt,
             "max_tokens": gen_config['max_tokens'],
             "temperature": gen_config['temperature'],
             "top_p": gen_config['top_p'],
             "top_k": gen_config['top_k'],
+            # "lora_request": ...  <-- 무시되던 이 부분은 삭제합니다.
         }
 
         headers = {"Content-Type": "application/json"}
 
-        # Add LoRA adapter if specified
-        if adapter_name:
-            # vLLM expects LoRA path in the request
-            adapter_path = Path(lora_config['adapters_dir']) / adapter_name
-            headers["X-LoRA-Path"] = str(adapter_path)
-            # Alternative: some vLLM versions use this format
-            payload["lora_request"] = {
-                "lora_name": adapter_name,
-                "lora_path": str(adapter_path),
-                "lora_int_id": request_id,
-            }
+        # [참고] 만약 vLLM 서버 실행 시 --lora-modules 이름=경로 로 지정했다면,
+        # 별도의 X-LoRA-Path 헤더나 경로 지정 없이 '이름(target_model)'만으로 충분합니다.
 
         start_time = time.time()
         error = None
@@ -236,7 +235,7 @@ class MultiLoRABenchmark:
         # Save as CSV
         df = pd.DataFrame(self.results)
         csv_path = output_path / f"benchmark_{timestamp}.csv"
-        df.to_csv(csv_path, index=False)
+        df.to_csv(csv_path, index=False, encoding="utf-8-sig")
         print(f"Detailed results saved to: {csv_path}")
 
         return csv_path
