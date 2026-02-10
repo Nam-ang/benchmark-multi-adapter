@@ -14,6 +14,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from tqdm.asyncio import tqdm
+from transformers import AutoTokenizer
 
 from utils import (
     load_config,
@@ -44,6 +45,13 @@ class MultiLoRABenchmark:
         self.results = []
         self.adapter_stats = defaultdict(lambda: {'count': 0, 'latencies': []})
 
+        # Load tokenizer for chat template
+        print(f"Loading tokenizer: {config['model']['name']}")
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            config['model']['name'],
+            trust_remote_code=True
+        )
+
     async def send_request(
         self,
         session: aiohttp.ClientSession,
@@ -55,10 +63,18 @@ class MultiLoRABenchmark:
         gen_config = self.config['generation']
         lora_config = self.config['lora']
 
+        # Apply chat template to the prompt
+        messages = [{"role": "user", "content": prompt}]
+        formatted_prompt = self.tokenizer.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=True
+        )
+
         # Prepare request payload
         payload = {
             "model": self.config['model']['name'],
-            "prompt": prompt,
+            "prompt": formatted_prompt,
             "max_tokens": gen_config['max_tokens'],
             "temperature": gen_config['temperature'],
             "top_p": gen_config['top_p'],
@@ -112,6 +128,7 @@ class MultiLoRABenchmark:
         result = {
             'request_id': request_id,
             'prompt': prompt,
+            'formatted_prompt': formatted_prompt,
             'adapter_name': adapter_name,
             'latency': latency,
             'num_tokens': num_tokens,
