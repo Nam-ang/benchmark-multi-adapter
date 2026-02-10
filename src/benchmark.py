@@ -525,9 +525,18 @@ async def run_single_benchmark(
         for item in data:
             item['adapter_name'] = baseline_adapter
     elif mode == 'multi':
-        # Assign different adapters for each task
-        if config['benchmark']['random_adapter_assignment'] and adapters:
-            print("Assigning random adapters to requests...")
+        # Check if adapter_name already exists in data (to maintain pairing)
+        has_adapters_in_data = all('adapter_name' in item for item in data)
+
+        if has_adapters_in_data:
+            print("Using adapter_name from dataset (maintaining prompt-adapter pairing)")
+            adapter_counts = {}
+            for item in data:
+                adapter = item['adapter_name']
+                adapter_counts[adapter] = adapter_counts.get(adapter, 0) + 1
+            print(f"Adapter distribution: {adapter_counts}")
+        elif config['benchmark']['random_adapter_assignment'] and adapters:
+            print("⚠️  Warning: Assigning random adapters (may break prompt-adapter pairing)")
             data = assign_random_adapters(data, adapters)
         elif not adapters:
             print("Warning: No adapters found, running without LoRA")

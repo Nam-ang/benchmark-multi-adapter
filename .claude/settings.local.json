@@ -10,7 +10,10 @@
       "Bash(python src/benchmark.py --help)",
       "Bash(python3 src/benchmark.py --help)",
       "Bash(chmod +x example_usage.sh)",
-      "Bash(python3 src/benchmark.py --mode compare)"
+      "Bash(python3 src/benchmark.py --mode compare)",
+      "Bash(python scripts/verify_pairing.py)",
+      "Bash(python3 scripts/verify_pairing.py)",
+      "Bash(pip3 install pyyaml pandas)"
     ]
   }
 }

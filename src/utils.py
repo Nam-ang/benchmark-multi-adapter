@@ -15,7 +15,15 @@ def load_config(config_path: str = "config.yaml") -> Dict[str, Any]:
 
 
 def load_dataset(dataset_path: str, shuffle: bool = True) -> List[Dict[str, Any]]:
-    """Load dataset from JSONL file."""
+    """
+    Load dataset from JSONL file.
+
+    Each line should contain a JSON object with at minimum 'prompt' field.
+    Optionally includes 'adapter_name' to maintain prompt-adapter pairing.
+
+    When shuffle=True, the entire data item (including prompt and adapter_name)
+    is shuffled together, maintaining the pairing.
+    """
     data = []
     with open(dataset_path, 'r', encoding='utf-8') as f:
         for line in f:
@@ -23,6 +31,7 @@ def load_dataset(dataset_path: str, shuffle: bool = True) -> List[Dict[str, Any]
                 data.append(json.loads(line))
 
     if shuffle:
+        # Shuffle the entire data items to maintain (prompt, adapter_name) pairing
         random.shuffle(data)
 
     return data
@@ -46,14 +55,31 @@ def get_available_adapters(adapters_dir: str) -> List[str]:
 
 def assign_random_adapters(
     data: List[Dict[str, Any]],
-    adapters: List[str]
+    adapters: List[str],
+    force: bool = False
 ) -> List[Dict[str, Any]]:
-    """Assign random adapters to each data instance."""
+    """
+    Assign random adapters to each data instance.
+
+    Args:
+        data: List of data items
+        adapters: List of available adapter names
+        force: If True, overwrite existing adapter_name. If False, only assign if missing.
+
+    Returns:
+        Modified data with adapter_name assigned
+
+    Warning:
+        This breaks prompt-adapter pairing if called on data that already has adapter_name.
+        Use force=False (default) to preserve existing pairings.
+    """
     if not adapters:
         raise ValueError("No adapters available")
 
     for item in data:
-        item['adapter_name'] = random.choice(adapters)
+        # Only assign if adapter_name doesn't exist or force=True
+        if force or 'adapter_name' not in item:
+            item['adapter_name'] = random.choice(adapters)
 
     return data
 
