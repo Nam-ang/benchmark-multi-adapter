@@ -1,0 +1,80 @@
+#!/bin/bash
+
+# vLLM Multi-LoRA Benchmark 사용 예시
+
+echo "=== vLLM Multi-LoRA Benchmark Usage Examples ==="
+echo ""
+
+# 1. Multi-Adapter 모드 (기본)
+echo "1. Multi-Adapter 모드 실행 (각 task별로 다른 adapter):"
+echo "   python src/benchmark.py --mode multi"
+echo "   python src/benchmark.py --mode multi --concurrency 10 --num-requests 100"
+echo ""
+
+# 2. Baseline 모드
+echo "2. Baseline 모드 실행 (모든 task에 단일 multi-task adapter):"
+echo "   python src/benchmark.py --mode baseline"
+echo "   python src/benchmark.py --mode baseline --concurrency 10"
+echo ""
+
+# 3. Compare 모드
+echo "3. Compare 모드 실행 (baseline vs multi-adapter 비교):"
+echo "   python src/benchmark.py --mode compare"
+echo "   python src/benchmark.py --mode compare --concurrency 10 --num-requests 100"
+echo ""
+
+# 4. 커스텀 설정
+echo "4. 커스텀 설정으로 실행:"
+echo "   python src/benchmark.py --mode compare --dataset data/custom_dataset.jsonl --config config.yaml"
+echo ""
+
+echo "=== Configuration (config.yaml) ==="
+echo ""
+echo "benchmark:"
+echo "  baseline_adapter: 'multi_task_adapter'  # baseline 모드에서 사용할 adapter"
+echo "  random_adapter_assignment: true          # multi 모드에서 random adapter 할당"
+echo "  num_requests: 100"
+echo "  concurrency: 1"
+echo ""
+
+echo "=== Output Files ==="
+echo ""
+echo "Single Mode:"
+echo "  - results/benchmark_{mode}_{timestamp}.json"
+echo "  - results/benchmark_{timestamp}.csv"
+echo "  - results/benchmark_{timestamp}_plot.png"
+echo ""
+echo "Compare Mode:"
+echo "  - results/comparison_{timestamp}.json     # 전체 비교 결과"
+echo "  - results/comparison_{timestamp}_plot.png # 6개의 비교 차트"
+echo "    1. Latency 비교 (Mean, P50, P95, P99)"
+echo "    2. Throughput 비교 (Requests/sec, Tokens/sec)"
+echo "    3. Success rate 비교"
+echo "    4. Latency 개선율 (%)"
+echo "    5. Adapter별 요청 분포 (multi-adapter)"
+echo "    6. Summary statistics table"
+echo ""
+
+echo "=== Expected Improvements ==="
+echo ""
+echo "Multi-Adapter (각 task별 adapter) vs Baseline (단일 multi-task adapter):"
+echo ""
+echo "Multi-Adapter의 장점:"
+echo "  ✓ 각 task에 특화된 성능"
+echo "  ✓ 높은 정확도와 품질"
+echo "  ✓ Task-specific 최적화"
+echo ""
+echo "Multi-Adapter의 단점:"
+echo "  ✗ Adapter 로딩/스위칭 오버헤드"
+echo "  ✗ 더 높은 메모리 사용량"
+echo "  ✗ 잠재적인 latency 증가"
+echo ""
+echo "Baseline의 장점:"
+echo "  ✓ Adapter 스위칭 없음"
+echo "  ✓ 낮은 오버헤드"
+echo "  ✓ 빠른 처리 속도"
+echo ""
+echo "Baseline의 단점:"
+echo "  ✗ Task별 특화 성능 감소"
+echo "  ✗ 전반적인 품질 저하 가능성"
+echo ""

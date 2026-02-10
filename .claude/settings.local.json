@@ -6,7 +6,11 @@
       "Bash(python3 search_algorithms.py)",
       "Bash(python3 dynamic_programming.py)",
       "Bash(python3 data_structures.py)",
-      "Bash(chmod +x scripts/*.sh scripts/*.py)"
+      "Bash(chmod +x scripts/*.sh scripts/*.py)",
+      "Bash(python src/benchmark.py --help)",
+      "Bash(python3 src/benchmark.py --help)",
+      "Bash(chmod +x example_usage.sh)",
+      "Bash(python3 src/benchmark.py --mode compare)"
     ]
   }
 }

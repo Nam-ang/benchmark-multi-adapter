@@ -26,6 +26,7 @@ benchmark:
   concurrency: 1  # 동시 요청 수
   shuffle_data: true  # 데이터 셔플링 여부
   random_adapter_assignment: true  # 어댑터 무작위 할당
+  baseline_adapter: "multi_task_adapter"  # baseline 모드에서 사용할 단일 multi-task 어댑터
 
 # Generation settings
 generation:

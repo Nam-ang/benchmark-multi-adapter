@@ -58,13 +58,13 @@ def assign_random_adapters(
     return data
 
 
-def save_results(results: Dict[str, Any], output_dir: str = "results"):
+def save_results(results: Dict[str, Any], output_dir: str = "results", mode: str = "multi"):
     """Save benchmark results to JSON file."""
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"benchmark_{timestamp}.json"
+    filename = f"benchmark_{mode}_{timestamp}.json"
     filepath = output_path / filename
 
     with open(filepath, 'w', encoding='utf-8') as f:
